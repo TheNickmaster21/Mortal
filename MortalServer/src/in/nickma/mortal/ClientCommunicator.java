@@ -59,9 +59,11 @@ public class ClientCommunicator implements Runnable {
                             System.out.println(e.getMessage());
                             break;
                         }
+                    } else {
+                        Thread.sleep(100);
                     }
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         }
