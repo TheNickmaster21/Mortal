@@ -1,6 +1,7 @@
 package in.nickma.mortal;
 
-import in.nickma.mortal.dto.WorkDTO;
+import in.nickma.mortal.dtos.WorkDTO;
+import in.nickma.mortal.solving.Solver;
 
 import java.io.*;
 import java.net.Socket;
@@ -13,7 +14,7 @@ public class MortalClient {
     }
 
     public void start() throws IOException {
-        System.out.println("MortalClient is starting...");
+        System.out.println("Mortal Client is starting...");
 
         Socket socket;
 
@@ -24,32 +25,22 @@ public class MortalClient {
             return;
         }
 
+        System.out.println("Socket opened");
+
         ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
         ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
 
         while (true) {
-            //receive message
             WorkDTO workDTO = receiveWorkDTO(inputStream);
             if (workDTO != null) {
-                System.out.println("<New message from server> " + workDTO.getMessage());
-
-                //get text from user
-                BufferedReader data = new BufferedReader(new InputStreamReader(System.in));
-                String message = data.readLine();
-
-                //send message
-                outputStream.writeObject(new WorkDTO(message));
-
-                //receive response
-                System.out.println("<Response from server> " + workDTO.getMessage());
-
-                //close socket when receive exit
-                if (message.equalsIgnoreCase("exit")) {
-                    outputStream.close();
-                    inputStream.close();
-                    data.close();
-                    socket.close();
-                    break;
+                Solver solver = new Solver(workDTO);
+                outputStream.writeObject(solver.solve());
+            } else {
+                try {
+                    System.out.println("Bad data?");
+                    Thread.sleep(100);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }

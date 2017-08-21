@@ -42,7 +42,8 @@ public class MortalServer {
         try {
             buildWorkDTOsFromInputStream(inputStream);
 
-            new ClientCommunicator(this, 8081);
+            ClientCommunicator clientCommunicator = new ClientCommunicator(this, 8081);
+            clientCommunicator.run();
         } catch (IOException e) {
             closeProgramWithException(e);
         }
@@ -64,8 +65,8 @@ public class MortalServer {
                     .collect(Collectors.joining(","));
             InputStream inputStream = externalCommunicationHandler.getSubmissionsStream(
                     path,
-                    resultDTO.getStartX(),
-                    resultDTO.getStartY());
+                    resultDTO.getStartX() + 1,
+                    resultDTO.getStartY() + 1);
             buildWorkDTOsFromInputStream(inputStream);
         }
     }
@@ -82,8 +83,8 @@ public class MortalServer {
                 Integer sizeX = Integer.parseInt(ss[1]);
                 Integer sizeY = Integer.parseInt(ss[3]);
                 String boardString = ss[5];
-                for (int x = 1; x <= sizeX; x++) {
-                    for (int y = 1; y <= sizeY; y++) {
+                for (int x = 0; x < sizeX; x++) {
+                    for (int y = 0; y < sizeY; y++) {
                         workStack.push(new WorkDTO(boardString, sizeX, sizeY, x, y));
                     }
                 }

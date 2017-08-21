@@ -38,6 +38,7 @@ public class ClientCommunicator implements Runnable {
         public SocketThread() throws IOException {
             this.socket = serverSocket.accept();
             System.out.println("Started new socket!");
+            this.run();
         }
 
         @Override
@@ -60,6 +61,7 @@ public class ClientCommunicator implements Runnable {
                             break;
                         }
                     } else {
+                        System.out.println("Client waiting for work..");
                         Thread.sleep(100);
                     }
                 }
