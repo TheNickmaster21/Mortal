@@ -7,20 +7,47 @@ import java.util.ArrayList;
 
 public class ResultDTO implements Serializable {
 
+    private final Boolean success;
+
     private final ArrayList<Direction> directions;
     private final Integer startX;
     private final Integer startY;
     private final Integer level;
 
-    public ResultDTO(
+    private ResultDTO(
             final ArrayList<Direction> directions,
             final Integer startX,
             final Integer startY,
             final Integer level) {
+        this.success = true;
         this.directions = directions;
         this.startX = startX;
         this.startY = startY;
         this.level = level;
+    }
+
+    private ResultDTO() {
+        this.success = false;
+        this.directions = null;
+        this.startX = null;
+        this.startY = null;
+        this.level = null;
+    }
+
+    public static ResultDTO getSuccessfullResultDTO(
+            final ArrayList<Direction> directions,
+            final Integer startX,
+            final Integer startY,
+            final Integer level) {
+        return new ResultDTO(directions, startX, startY, level);
+    }
+
+    public static ResultDTO getUnsuccessfullResultDTO() {
+        return new ResultDTO();
+    }
+
+    public Boolean isSuccessfull() {
+        return success;
     }
 
     public ArrayList<Direction> getDirections() {
