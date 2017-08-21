@@ -1,56 +1,81 @@
 package in.nickma.mortal;
 
 
-import in.nickma.mortal.dto.WorkDTO;
+import in.nickma.mortal.dtos.WorkDTO;
+import in.nickma.mortal.dtos.ResultDTO;
 
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.Stack;
+
 
 public class MortalServer {
 
     public static void main(String args[]) throws Exception {
-        MortalServer mortalServer = new MortalServer();
-        mortalServer.start();
+        PropertyHandler propertyHandler = new PropertyHandler();
+        ExternalCommunicationHandler externalCommunicationHandler = new ExternalCommunicationHandler(
+                propertyHandler.getUsername(),
+                propertyHandler.getPassword());
+
+        MortalServer mortalServer = new MortalServer(externalCommunicationHandler);
+
+        while (mortalServer.isActive()) {
+            Thread.sleep(100);
+        }
     }
 
-    public void start() throws IOException {
-        System.out.println("Server is starting...");
+    private ExternalCommunicationHandler externalCommunicationHandler;
 
-        ServerSocket serverSocket;
+    private Stack<WorkDTO> workStack = new Stack<>();
+    private Boolean active = true;
 
-        try {
-            serverSocket = new ServerSocket(8081);
-            System.out.println("Server is ready!");
-        } catch (Exception e) {
-            System.out.println("Initializing error. Try changing port number!" + e);
+    private MortalServer(ExternalCommunicationHandler externalCommunicationHandler) {
+        this.externalCommunicationHandler = externalCommunicationHandler;
+
+        this.initialize();
+    }
+
+    private void initialize() {
+        InputStream inputStream = externalCommunicationHandler.getInitialStream();
+        if (inputStream == null) {
             return;
         }
+        try {
+            buildWorkDTOsFromInputStream(inputStream);
 
-        Socket clientSocket = serverSocket.accept();
+            new ClientCommunicator(this, 8081);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
-        ObjectOutputStream outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-        ObjectInputStream inputStream = new ObjectInputStream(clientSocket.getInputStream());
+    public WorkDTO getWork() {
+        if (!workStack.empty()) {
+            return workStack.pop();
+        }
+        return null;
+    }
 
-        outputStream.writeObject(new WorkDTO("Give me some text!"));
+    public void receiveResult(final ResultDTO resultDTO) {
 
-        while (true) {
+    }
 
-            WorkDTO workDTO = receiveWorkDTO(inputStream);
-            if (workDTO != null) {
-                System.out.println("<New message from client> " + workDTO.getMessage());
-                outputStream.writeObject(new WorkDTO(new StringBuilder(workDTO.getMessage()).reverse().toString()));
-
-                if (workDTO.getMessage().equalsIgnoreCase("exit")) {
-                    System.out.println("Session closed!");
-                    outputStream.close();
-                    inputStream.close();
-                    clientSocket.close();
-                    serverSocket.close();
-                    break;
+    private void buildWorkDTOsFromInputStream(final InputStream inputStream) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            if (!line.startsWith("\t\t\t<param name=\"FlashVars\"")) continue;
+            line = line.split("\"")[3]; // get just the value
+            String[] ss = line.split("(=|&)"); // split up the name value pairs
+            Integer boardX = Integer.parseInt(ss[1]);
+            Integer boardY = Integer.parseInt(ss[3]);
+            String boardString = ss[5];
+            for (int x = 1; x <= boardX; x++) {
+                for (int y = 1; y <= boardY; y++) {
+                    workStack.push(new WorkDTO(boardString, x, y));
                 }
             }
         }
+        bufferedReader.close();
     }
 
     private WorkDTO receiveWorkDTO(final ObjectInputStream inputStream) {
@@ -61,5 +86,9 @@ public class MortalServer {
         } catch (ClassNotFoundException exception) {
             return null;
         }
+    }
+
+    public Boolean isActive() {
+        return active;
     }
 }
