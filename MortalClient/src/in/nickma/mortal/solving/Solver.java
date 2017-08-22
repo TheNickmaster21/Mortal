@@ -8,7 +8,6 @@ import java.util.*;
 
 public class Solver {
 
-    private final Stack<Step> stepStack = new Stack<>();
     private ResultDTO result = null;
     private WorkDTO workDTO;
 
@@ -17,10 +16,10 @@ public class Solver {
     }
 
     public ResultDTO solve() {
-        buildInitialStep();
+        Step step = buildInitialStep();
 
-        while (!stepStack.empty() && result == null) {
-            buildNextSteps(stepStack.pop());
+        if (step != null) {
+            buildNextSteps(step);
         }
         if (result != null) {
             return result;
@@ -29,7 +28,7 @@ public class Solver {
         }
     }
 
-    private void buildInitialStep() {
+    private Step buildInitialStep() {
         final boolean[][] grid = new boolean[workDTO.getSizeX()][workDTO.getSizeY()];
         Integer spacesLeft = workDTO.getSizeX() * workDTO.getSizeY() - 1;
         for (int y = 0; y < workDTO.getSizeY(); y++) {
@@ -43,9 +42,10 @@ public class Solver {
         }
         if (grid[workDTO.getStartX()][workDTO.getStartY()]) {
             grid[workDTO.getStartX()][workDTO.getStartY()] = false;
-            stepStack.push(new Step(grid, spacesLeft, new ArrayList<>(), workDTO.getStartX(), workDTO.getStartY()));
+            return new Step(grid, spacesLeft, new ArrayList<>(), workDTO.getStartX(), workDTO.getStartY());
         } else {
             result = ResultDTO.getUnsuccessfullResultDTO();
+            return null;
         }
     }
 
@@ -90,7 +90,7 @@ public class Solver {
                 //System.out.print(step.getY());
                 //System.out.println(direction.toString());
                 //printGrid(newGrid, nextX - 1, nextY - 1);
-                System.out.println();
+                //System.out.println();
                 if (newSpacesLeft == 0) {
                     result = ResultDTO.getSuccessfullResultDTO(
                             newDirectionHistory,
@@ -100,7 +100,7 @@ public class Solver {
                     return;
                 }
 
-                stepStack.push(new Step(
+                buildNextSteps(new Step(
                         newGrid,
                         newSpacesLeft,
                         newDirectionHistory,
