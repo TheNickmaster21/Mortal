@@ -74,7 +74,7 @@ public class Solver {
             int nextX = step.getX() + direction.getX();
             int nextY = step.getY() + direction.getY();
             if (isSpaceValid(nextX, nextY, step.getGrid())) {
-                printGrid(step.getGrid(), step.getX(), step.getY());
+                //printGrid(step.getGrid(), step.getX(), step.getY());
                 final boolean[][] newGrid = deepCopy(step.getGrid());
                 Integer newSpacesLeft = step.getSpacesLeft();
                 do {
@@ -85,11 +85,11 @@ public class Solver {
                 } while (isSpaceValid(nextX, nextY, newGrid));
                 List<Direction> newDirectionHistory = new ArrayList<>(step.getDirectionHistory());
                 newDirectionHistory.add(direction);
-                System.out.print(step.getX());
-                System.out.print(',');
-                System.out.print(step.getY());
-                System.out.println(direction.toString());
-                printGrid(newGrid, nextX - 1, nextY - 1);
+                //System.out.print(step.getX());
+                //System.out.print(',');
+                //System.out.print(step.getY());
+                //System.out.println(direction.toString());
+                //printGrid(newGrid, nextX - 1, nextY - 1);
                 System.out.println();
                 if (newSpacesLeft == 0) {
                     result = ResultDTO.getSuccessfullResultDTO(

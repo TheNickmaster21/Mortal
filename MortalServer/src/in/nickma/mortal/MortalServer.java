@@ -75,24 +75,26 @@ public class MortalServer {
         try {
             bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
+            int level = 0;
             while ((line = bufferedReader.readLine()) != null) {
-                System.out.println(line);
-                if (!line.startsWith("\t\t\t<param name=\"FlashVars\"")) continue;
-                workStack.removeAllElements();
-                line = line.split("\"")[3];
-                String[] ss = line.split("(=|&)");
-                Integer sizeX = Integer.parseInt(ss[1]);
-                Integer sizeY = Integer.parseInt(ss[3]);
-                String boardString = ss[5];
-                for (int x = 0; x < sizeX; x++) {
-                    for (int y = 0; y < sizeY; y++) {
-                        //TODO Handle level
-                        workStack.push(new WorkDTO(boardString, sizeX, sizeY, x, y, 1));
+                if (line.startsWith("</tr></table>Level: ")) {
+                    level = Integer.parseInt(line.substring(line.indexOf(":") + 2, line.indexOf("<br>")));
+                    System.out.print(level);
+                } else if (line.startsWith("\t\t\t<param name=\"FlashVars\"")) {
+                    System.out.println(line);
+                    workStack.removeAllElements();
+                    line = line.split("\"")[3];
+                    String[] ss = line.split("(=|&)");
+                    Integer sizeX = Integer.parseInt(ss[1]);
+                    Integer sizeY = Integer.parseInt(ss[3]);
+                    String boardString = ss[5];
+                    for (int x = 0; x < sizeX; x++) {
+                        for (int y = 0; y < sizeY; y++) {
+                            workStack.push(new WorkDTO(boardString, sizeX, sizeY, x, y, level));
+                        }
                     }
+                    break;
                 }
-                //workStack.push(new WorkDTO(boardString, sizeX, sizeY, 3, 6, 1));
-
-                break;
             }
         } catch (IOException e) {
             closeProgramWithException(e);
