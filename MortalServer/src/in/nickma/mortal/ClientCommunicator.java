@@ -22,9 +22,10 @@ public class ClientCommunicator implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (!serverSocket.isClosed()) {
             try {
-                new ClientSocketThread();
+                new Thread(new ClientSocketThread()).start();
+                System.out.println("Client connected");
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
@@ -39,7 +40,6 @@ public class ClientCommunicator implements Runnable {
         public ClientSocketThread() throws IOException {
             this.socket = serverSocket.accept();
             System.out.println("Connected with new client!");
-            this.run();
         }
 
         @Override

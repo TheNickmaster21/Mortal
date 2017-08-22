@@ -44,26 +44,26 @@ public class MortalServer {
             buildWorkDTOsFromInputStream(inputStream);
 
             ClientCommunicator clientCommunicator = new ClientCommunicator(this, 8081);
-            clientCommunicator.run();
+            new Thread(clientCommunicator).start();
         } catch (IOException e) {
             closeProgramWithException(e);
         }
     }
 
-    public WorkDTO getWork() {
+    public synchronized WorkDTO getWork() {
         if (!workStack.empty()) {
             return workStack.pop();
         }
         return null;
     }
 
-    public void giveWork(final WorkDTO workDTO) {
+    public synchronized void giveWork(final WorkDTO workDTO) {
         if (currentLevel.equals(workDTO.getLevel())) {
             workStack.push(workDTO);
         }
     }
 
-    public void receiveResult(final ResultDTO resultDTO) {
+    public synchronized void receiveResult(final ResultDTO resultDTO) {
         if (resultDTO.isSuccessfull()) {
             String path = resultDTO.getDirections()
                     .stream()

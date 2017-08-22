@@ -1,7 +1,7 @@
 package in.nickma.mortal;
 
 import in.nickma.mortal.dtos.WorkDTO;
-import in.nickma.mortal.solving.Solver;
+import in.nickma.mortal.solving.SimpleSolver;
 
 import java.io.*;
 import java.net.Socket;
@@ -30,11 +30,12 @@ public class MortalClient {
         ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
         ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
 
-        while (true) {
+        while (!socket.isClosed()) {
             WorkDTO workDTO = receiveWorkDTO(inputStream);
             if (workDTO != null) {
-                Solver solver = new Solver(workDTO);
-                outputStream.writeObject(solver.solve());
+                System.out.println("Starting work");
+                SimpleSolver simpleSolver = new SimpleSolver(workDTO);
+                outputStream.writeObject(simpleSolver.solve());
             } else {
                 try {
                     Thread.sleep(100);
