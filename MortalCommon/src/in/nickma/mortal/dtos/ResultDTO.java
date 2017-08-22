@@ -3,19 +3,19 @@ package in.nickma.mortal.dtos;
 import in.nickma.mortal.enums.Direction;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.List;
 
 public class ResultDTO implements Serializable {
 
     private final Boolean success;
 
-    private final ArrayList<Direction> directions;
+    private final List<Direction> directions;
     private final Integer startX;
     private final Integer startY;
     private final Integer level;
 
     private ResultDTO(
-            final ArrayList<Direction> directions,
+            final List<Direction> directions,
             final Integer startX,
             final Integer startY,
             final Integer level) {
@@ -35,7 +35,7 @@ public class ResultDTO implements Serializable {
     }
 
     public static ResultDTO getSuccessfullResultDTO(
-            final ArrayList<Direction> directions,
+            final List<Direction> directions,
             final Integer startX,
             final Integer startY,
             final Integer level) {
@@ -50,7 +50,7 @@ public class ResultDTO implements Serializable {
         return success;
     }
 
-    public ArrayList<Direction> getDirections() {
+    public List<Direction> getDirections() {
         return directions;
     }
 

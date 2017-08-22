@@ -58,15 +58,14 @@ public class MortalServer {
 
     public void receiveResult(final ResultDTO resultDTO) {
         if (resultDTO.isSuccessfull()) {
-            workStack.removeAllElements();
             String path = resultDTO.getDirections()
                     .stream()
                     .map(Direction::toString)
                     .collect(Collectors.joining(","));
             InputStream inputStream = externalCommunicationHandler.getSubmissionsStream(
                     path,
-                    resultDTO.getStartX() + 1,
-                    resultDTO.getStartY() + 1);
+                    resultDTO.getStartX(),
+                    resultDTO.getStartY());
             buildWorkDTOsFromInputStream(inputStream);
         }
     }
@@ -77,7 +76,9 @@ public class MortalServer {
             bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
             while ((line = bufferedReader.readLine()) != null) {
+                System.out.println(line);
                 if (!line.startsWith("\t\t\t<param name=\"FlashVars\"")) continue;
+                workStack.removeAllElements();
                 line = line.split("\"")[3];
                 String[] ss = line.split("(=|&)");
                 Integer sizeX = Integer.parseInt(ss[1]);
@@ -85,7 +86,8 @@ public class MortalServer {
                 String boardString = ss[5];
                 for (int x = 0; x < sizeX; x++) {
                     for (int y = 0; y < sizeY; y++) {
-                        workStack.push(new WorkDTO(boardString, sizeX, sizeY, x, y));
+                        //TODO Handle level
+                        workStack.push(new WorkDTO(boardString, sizeX, sizeY, x, y, 1));
                     }
                 }
                 break;

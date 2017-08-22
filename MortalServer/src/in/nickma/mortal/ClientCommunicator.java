@@ -61,7 +61,6 @@ public class ClientCommunicator implements Runnable {
                             break;
                         }
                     } else {
-                        System.out.println("Client waiting for work..");
                         Thread.sleep(100);
                     }
                 }

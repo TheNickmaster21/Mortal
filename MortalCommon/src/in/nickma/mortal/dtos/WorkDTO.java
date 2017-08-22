@@ -9,18 +9,21 @@ public class WorkDTO implements Serializable {
     private final Integer sizeY;
     private final Integer startX;
     private final Integer startY;
+    private final Integer level;
 
     public WorkDTO(
             final String gridData,
             final Integer sizeX,
             final Integer sizeY,
             final Integer startX,
-            final Integer startY) {
+            final Integer startY,
+            final Integer level) {
         this.gridData = gridData;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.startX = startX;
         this.startY = startY;
+        this.level = level;
     }
 
     public String getGridData() {
@@ -41,5 +44,9 @@ public class WorkDTO implements Serializable {
 
     public Integer getStartY() {
         return startY;
+    }
+
+    public Integer getLevel() {
+        return level;
     }
 }

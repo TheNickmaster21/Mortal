@@ -1,36 +1,39 @@
 package in.nickma.mortal.enums;
 
+import java.util.EnumSet;
+
 public enum Direction {
 
-    UP('U'),
-    DOWN('D'),
-    LEFT('L'),
-    RIGHT('R');
+    UP('U', 0, -1),
+    DOWN('D', 0, 1),
+    LEFT('L', -1, 0),
+    RIGHT('R', 1, 0);
 
     private char code;
+    private int x;
+    private int y;
 
-    Direction(final char code) {
+    Direction(final char code, final int x, final int y) {
         this.code = code;
+        this.x = x;
+        this.y = y;
     }
 
-    public static Direction getDirection(final Integer x, final Integer y) {
-        if (Integer.signum(x) == 1) {
-            return LEFT;
-        }
-        if (Integer.signum(x) == -1) {
-            return RIGHT;
-        }
-        if (Integer.signum(y) == 1) {
-            return UP;
-        }
-        if (Integer.signum(y) == -1) {
-            return DOWN;
-        }
-        return null;
+    public static EnumSet<Direction> getDirections() {
+        return EnumSet.allOf(Direction.class);
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 
     @Override
     public String toString() {
         return String.valueOf(this.code);
     }
+
 }

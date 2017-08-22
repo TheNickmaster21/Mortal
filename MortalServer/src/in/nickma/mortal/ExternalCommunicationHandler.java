@@ -23,6 +23,7 @@ public class ExternalCommunicationHandler {
     }
 
     public InputStream getSubmissionsStream(final String path, final Integer x, final Integer y) {
+        System.out.println(String.format(SUBMIT_URL, username, password, path, x, y));
         return buildAndHandleURL(String.format(SUBMIT_URL, username, password, path, x, y));
     }
 

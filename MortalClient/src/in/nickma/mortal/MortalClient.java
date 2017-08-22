@@ -37,7 +37,6 @@ public class MortalClient {
                 outputStream.writeObject(solver.solve());
             } else {
                 try {
-                    System.out.println("Bad data?");
                     Thread.sleep(100);
                 } catch (Exception e) {
                     e.printStackTrace();
