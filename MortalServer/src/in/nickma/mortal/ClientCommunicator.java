@@ -24,20 +24,21 @@ public class ClientCommunicator implements Runnable {
     public void run() {
         while (true) {
             try {
-                new SocketThread();
+                new ClientSocketThread();
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
         }
     }
 
-    private class SocketThread implements Runnable {
+    private class ClientSocketThread implements Runnable {
 
         private final Socket socket;
+        private WorkDTO workDTO;
 
-        public SocketThread() throws IOException {
+        public ClientSocketThread() throws IOException {
             this.socket = serverSocket.accept();
-            System.out.println("Started new socket!");
+            System.out.println("Connected with new client!");
             this.run();
         }
 
@@ -50,7 +51,7 @@ public class ClientCommunicator implements Runnable {
                 inputStream = new ObjectInputStream(socket.getInputStream());
 
                 while (true) {
-                    WorkDTO workDTO = mortalServer.getWork();
+                    workDTO = mortalServer.getWork();
                     if (workDTO != null) {
                         outputStream.writeObject(workDTO);
                         try {
@@ -58,7 +59,8 @@ public class ClientCommunicator implements Runnable {
                             mortalServer.receiveResult(resultDTO);
                         } catch (ClassNotFoundException e) {
                             System.out.println(e.getMessage());
-                            break;
+                            System.out.println("Client sent garbage result; giving back work.");
+                            giveBackWork();
                         }
                     } else {
                         Thread.sleep(100);
@@ -66,6 +68,22 @@ public class ClientCommunicator implements Runnable {
                 }
             } catch (Exception e) {
                 System.out.println(e.getMessage());
+                System.out.println("Client connection died; giving back work and cleaning up socket");
+                giveBackWork();
+                if (socket != null && !socket.isClosed()) {
+                    try {
+                        socket.close();
+                    } catch (IOException ioE) {
+                        System.out.println(ioE.getMessage());
+                        System.out.println("Issue closing socket");
+                    }
+                }
+            }
+        }
+
+        private void giveBackWork() {
+            if (workDTO != null) {
+                mortalServer.giveWork(workDTO);
             }
         }
     }

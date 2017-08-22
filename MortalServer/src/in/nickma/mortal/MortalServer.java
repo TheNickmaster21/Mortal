@@ -27,6 +27,7 @@ public class MortalServer {
 
     private ExternalCommunicationHandler externalCommunicationHandler;
     private Stack<WorkDTO> workStack = new Stack<>();
+    private Integer currentLevel = 0;
     private Boolean active = true;
 
     private MortalServer(ExternalCommunicationHandler externalCommunicationHandler) {
@@ -56,6 +57,12 @@ public class MortalServer {
         return null;
     }
 
+    public void giveWork(final WorkDTO workDTO) {
+        if (currentLevel.equals(workDTO.getLevel())) {
+            workStack.push(workDTO);
+        }
+    }
+
     public void receiveResult(final ResultDTO resultDTO) {
         if (resultDTO.isSuccessfull()) {
             String path = resultDTO.getDirections()
@@ -75,11 +82,10 @@ public class MortalServer {
         try {
             bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
-            int level = 0;
             while ((line = bufferedReader.readLine()) != null) {
                 if (line.startsWith("</tr></table>Level: ")) {
-                    level = Integer.parseInt(line.substring(line.indexOf(":") + 2, line.indexOf("<br>")));
-                    System.out.print(level);
+                    currentLevel = Integer.parseInt(line.substring(line.indexOf(":") + 2, line.indexOf("<br>")));
+                    System.out.print(currentLevel);
                 } else if (line.startsWith("\t\t\t<param name=\"FlashVars\"")) {
                     System.out.println(line);
                     workStack.removeAllElements();
@@ -90,7 +96,7 @@ public class MortalServer {
                     String boardString = ss[5];
                     for (int x = 0; x < sizeX; x++) {
                         for (int y = 0; y < sizeY; y++) {
-                            workStack.push(new WorkDTO(boardString, sizeX, sizeY, x, y, level));
+                            workStack.push(new WorkDTO(boardString, sizeX, sizeY, x, y, currentLevel));
                         }
                     }
                     break;
