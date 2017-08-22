@@ -61,7 +61,7 @@ public class MortalServer {
             String path = resultDTO.getDirections()
                     .stream()
                     .map(Direction::toString)
-                    .collect(Collectors.joining(","));
+                    .collect(Collectors.joining(""));
             InputStream inputStream = externalCommunicationHandler.getSubmissionsStream(
                     path,
                     resultDTO.getStartX(),
@@ -90,6 +90,8 @@ public class MortalServer {
                         workStack.push(new WorkDTO(boardString, sizeX, sizeY, x, y, 1));
                     }
                 }
+                //workStack.push(new WorkDTO(boardString, sizeX, sizeY, 3, 6, 1));
+
                 break;
             }
         } catch (IOException e) {

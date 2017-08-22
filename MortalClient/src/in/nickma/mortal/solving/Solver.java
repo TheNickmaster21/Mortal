@@ -5,7 +5,6 @@ import in.nickma.mortal.dtos.WorkDTO;
 import in.nickma.mortal.enums.Direction;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Solver {
 
@@ -51,9 +50,15 @@ public class Solver {
     }
 
     private void printGrid(boolean[][] grid) {
+        printGrid(grid, -1, -1);
+    }
+
+    private void printGrid(boolean[][] grid, int xx, int yy) {
         for (int y = 0; y < workDTO.getSizeY(); y++) {
             for (int x = 0; x < workDTO.getSizeX(); x++) {
-                if (grid[x][y]) {
+                if (x == xx && y == yy) {
+                    System.out.print('O');
+                } else if (grid[x][y]) {
                     System.out.print('-');
                 } else {
                     System.out.print('X');
@@ -69,7 +74,7 @@ public class Solver {
             int nextX = step.getX() + direction.getX();
             int nextY = step.getY() + direction.getY();
             if (isSpaceValid(nextX, nextY, step.getGrid())) {
-                printGrid(step.getGrid());
+                printGrid(step.getGrid(), step.getX(), step.getY());
                 final boolean[][] newGrid = deepCopy(step.getGrid());
                 Integer newSpacesLeft = step.getSpacesLeft();
                 do {
@@ -84,7 +89,7 @@ public class Solver {
                 System.out.print(',');
                 System.out.print(step.getY());
                 System.out.println(direction.toString());
-                printGrid(newGrid);
+                printGrid(newGrid, nextX - 1, nextY - 1);
                 System.out.println();
                 if (newSpacesLeft == 0) {
                     result = ResultDTO.getSuccessfullResultDTO(
