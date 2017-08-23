@@ -3,7 +3,6 @@ package in.nickma.mortal;
 
 import in.nickma.mortal.dtos.WorkDTO;
 import in.nickma.mortal.dtos.ResultDTO;
-import in.nickma.mortal.enums.Direction;
 
 import java.io.*;
 import java.util.Stack;
@@ -65,12 +64,8 @@ public class MortalServer {
 
     public synchronized void receiveResult(final ResultDTO resultDTO) {
         if (resultDTO.isSuccessfull()) {
-            String path = resultDTO.getDirections()
-                    .stream()
-                    .map(Direction::toString)
-                    .collect(Collectors.joining(""));
             InputStream inputStream = externalCommunicationHandler.getSubmissionsStream(
-                    path,
+                    resultDTO.getPath(),
                     resultDTO.getStartX(),
                     resultDTO.getStartY());
             buildWorkDTOsFromInputStream(inputStream);

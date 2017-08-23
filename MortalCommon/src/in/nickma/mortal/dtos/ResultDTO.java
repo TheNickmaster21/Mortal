@@ -1,26 +1,23 @@
 package in.nickma.mortal.dtos;
 
-import in.nickma.mortal.enums.Direction;
-
 import java.io.Serializable;
-import java.util.List;
 
 public class ResultDTO implements Serializable {
 
     private final Boolean success;
 
-    private final List<Direction> directions;
+    private final String path;
     private final Integer startX;
     private final Integer startY;
     private final Integer level;
 
     private ResultDTO(
-            final List<Direction> directions,
+            final String path,
             final Integer startX,
             final Integer startY,
             final Integer level) {
         this.success = true;
-        this.directions = directions;
+        this.path = path;
         this.startX = startX;
         this.startY = startY;
         this.level = level;
@@ -28,18 +25,18 @@ public class ResultDTO implements Serializable {
 
     private ResultDTO() {
         this.success = false;
-        this.directions = null;
+        this.path = null;
         this.startX = null;
         this.startY = null;
         this.level = null;
     }
 
     public static ResultDTO getSuccessfullResultDTO(
-            final List<Direction> directions,
+            final String path,
             final Integer startX,
             final Integer startY,
             final Integer level) {
-        return new ResultDTO(directions, startX, startY, level);
+        return new ResultDTO(path, startX, startY, level);
     }
 
     public static ResultDTO getUnsuccessfullResultDTO() {
@@ -50,8 +47,8 @@ public class ResultDTO implements Serializable {
         return success;
     }
 
-    public List<Direction> getDirections() {
-        return directions;
+    public String getPath() {
+        return path;
     }
 
     public Integer getStartX() {

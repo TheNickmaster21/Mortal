@@ -6,7 +6,7 @@ import in.nickma.mortal.enums.Direction;
 
 import java.util.*;
 
-public class SimpleSolver implements Solver{
+public class SimpleSolver implements Solver {
 
     private ResultDTO result = null;
     private WorkDTO workDTO;
@@ -43,7 +43,7 @@ public class SimpleSolver implements Solver{
         }
         if (grid[workDTO.getStartX()][workDTO.getStartY()]) {
             grid[workDTO.getStartX()][workDTO.getStartY()] = false;
-            return new Step(grid, spacesLeft, new ArrayList<>(), workDTO.getStartX(), workDTO.getStartY());
+            return new Step(grid, spacesLeft, "", workDTO.getStartX(), workDTO.getStartY());
         } else {
             result = ResultDTO.getUnsuccessfullResultDTO();
             return null;
@@ -84,8 +84,6 @@ public class SimpleSolver implements Solver{
                     nextX += direction.getX();
                     nextY += direction.getY();
                 } while (isSpaceValid(nextX, nextY, newGrid));
-                List<Direction> newDirectionHistory = new ArrayList<>(step.getDirectionHistory());
-                newDirectionHistory.add(direction);
                 //System.out.print(step.getX());
                 //System.out.print(',');
                 //System.out.print(step.getY());
@@ -94,7 +92,7 @@ public class SimpleSolver implements Solver{
                 //System.out.println();
                 if (newSpacesLeft == 0) {
                     result = ResultDTO.getSuccessfullResultDTO(
-                            newDirectionHistory,
+                            step.getDirectionHistory() + direction.toString(),
                             workDTO.getStartX(),
                             workDTO.getStartY(),
                             workDTO.getLevel());
@@ -104,7 +102,7 @@ public class SimpleSolver implements Solver{
                 buildNextSteps(new Step(
                         newGrid,
                         newSpacesLeft,
-                        newDirectionHistory,
+                        step.getDirectionHistory() + direction.toString(),
                         nextX - direction.getX(),
                         nextY - direction.getY()));
             }
