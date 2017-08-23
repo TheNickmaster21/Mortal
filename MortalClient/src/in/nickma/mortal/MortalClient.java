@@ -19,9 +19,41 @@ public class MortalClient {
 
     public void start() throws IOException {
         System.out.println("Mortal Client is starting...");
+        Socket socket = connectWithServer();
+        System.out.println("Server found!");
 
+        ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+        ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+
+        List<Long> timeHistory = new LinkedList<>();
+
+        while (!socket.isClosed()) {
+            WorkDTO workDTO = receiveWorkDTO(inputStream);
+            if (workDTO != null) {
+                SimpleSolver simpleSolver = new SimpleSolver(workDTO);
+
+                long start = System.nanoTime();
+                ResultDTO resultDTO = simpleSolver.solve();
+                timeHistory.add(System.nanoTime() - start);
+                if (timeHistory.size() % 10 == 0) {
+                    System.out.println("Solving took "
+                            + String.valueOf(timeHistory.stream().collect(Collectors.averagingLong(l -> l)) / 1000000000)
+                            + " seconds on average.");
+                    timeHistory = new LinkedList<>();
+                }
+                outputStream.writeObject(resultDTO);
+            } else {
+                try {
+                    Thread.sleep(100);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private Socket connectWithServer() {
         Socket socket = null;
-
         System.out.println("Looking for the server");
         while (socket == null || socket.isClosed()) {
             try {
@@ -35,42 +67,9 @@ public class MortalClient {
                 }
             }
         }
-
-        System.out.println("Server found!");
-
-        ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-        ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-
-        List<Long> timeHistory = new LinkedList<>();
-
-        while (!socket.isClosed())
-
-        {
-            WorkDTO workDTO = receiveWorkDTO(inputStream);
-            if (workDTO != null) {
-                SimpleSolver simpleSolver = new SimpleSolver(workDTO);
-
-                long start = System.nanoTime();
-                ResultDTO resultDTO = simpleSolver.solve();
-                timeHistory.add(System.nanoTime() - start);
-                if (timeHistory.size() % 10 == 0) {
-                    System.out.println("Solving took "
-                            + timeHistory.stream().collect(Collectors.averagingLong(l -> l))
-                            + " nanoseconds on average.");
-                    timeHistory = new LinkedList<>();
-                }
-
-                outputStream.writeObject(resultDTO);
-            } else {
-                try {
-                    Thread.sleep(100);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
+        return socket;
     }
+
 
     private WorkDTO receiveWorkDTO(final ObjectInputStream inputStream) {
         try {
