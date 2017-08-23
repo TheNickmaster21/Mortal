@@ -78,7 +78,6 @@ public class SmartSolver implements Solver {
             int nextX = step.getX() + direction.getX();
             int nextY = step.getY() + direction.getY();
             if (isSpaceValid(nextX, nextY, step.getGrid())) {
-                //printGrid(step.getGrid(), step.getX(), step.getY());
                 final boolean[][] newGrid = deepCopy(step.getGrid());
                 Integer newSpacesLeft = step.getSpacesLeft();
                 do {
@@ -93,12 +92,7 @@ public class SmartSolver implements Solver {
                     nextX += direction.getX();
                     nextY += direction.getY();
                 } while (isSpaceValid(nextX, nextY, newGrid));
-                //System.out.print(step.getX());
-                //System.out.print(',');
-                //System.out.print(step.getY());
-                //System.out.println(direction.toString());
-                //printGrid(newGrid, nextX - 1, nextY - 1);
-                //System.out.println();
+
                 if (newSpacesLeft == 0) {
                     result = ResultDTO.getSuccessfullResultDTO(
                             step.getDirectionHistory() + direction.toString(),
@@ -112,13 +106,7 @@ public class SmartSolver implements Solver {
                             .filter(point -> isSpaceEnd(point.getX(), point.getY(), newGrid))
                             .collect(Collectors.toSet());
                     if (endPoints.size() > 2) {
-                        endPoints.forEach(p -> {
-                            System.out.print(p.getX());
-                            System.out.print(",");
-                            System.out.println(p.getY());
-                        });
-                        printGrid(newGrid, nextX - direction.getX(), nextY - direction.getY());
-                        return;
+                        continue;
                     }
                 }
 

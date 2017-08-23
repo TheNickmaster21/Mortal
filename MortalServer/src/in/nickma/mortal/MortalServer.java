@@ -1,13 +1,10 @@
 package in.nickma.mortal;
 
-
 import in.nickma.mortal.dtos.WorkDTO;
 import in.nickma.mortal.dtos.ResultDTO;
 
 import java.io.*;
 import java.util.Stack;
-import java.util.stream.Collectors;
-
 
 public class MortalServer {
 

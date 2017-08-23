@@ -67,6 +67,7 @@ public class SimpleSolver implements Solver {
             }
             System.out.println();
         }
+        System.out.println();
     }
 
 
@@ -75,7 +76,6 @@ public class SimpleSolver implements Solver {
             int nextX = step.getX() + direction.getX();
             int nextY = step.getY() + direction.getY();
             if (isSpaceValid(nextX, nextY, step.getGrid())) {
-                //printGrid(step.getGrid(), step.getX(), step.getY());
                 final boolean[][] newGrid = deepCopy(step.getGrid());
                 Integer newSpacesLeft = step.getSpacesLeft();
                 do {
@@ -84,12 +84,12 @@ public class SimpleSolver implements Solver {
                     nextX += direction.getX();
                     nextY += direction.getY();
                 } while (isSpaceValid(nextX, nextY, newGrid));
-                //System.out.print(step.getX());
-                //System.out.print(',');
-                //System.out.print(step.getY());
-                //System.out.println(direction.toString());
-                //printGrid(newGrid, nextX - 1, nextY - 1);
-                //System.out.println();
+                if(step.getDirectionHistory().equals("RURULDRUL")){
+                    printGrid(newGrid, nextX - direction.getX(), nextY - direction.getY());
+                    System.out.println("Simple");
+                    System.out.println();
+                }
+
                 if (newSpacesLeft == 0) {
                     result = ResultDTO.getSuccessfullResultDTO(
                             step.getDirectionHistory() + direction.toString(),
