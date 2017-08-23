@@ -31,6 +31,20 @@ public enum Direction {
         return y;
     }
 
+    public Direction[] getSides() {
+        switch (this) {
+            case UP:
+                return new Direction[]{RIGHT, LEFT};
+            case DOWN:
+                return new Direction[]{RIGHT, LEFT};
+            case LEFT:
+                return new Direction[]{UP, DOWN};
+            case RIGHT:
+                return new Direction[]{UP, DOWN};
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return String.valueOf(this.code);
