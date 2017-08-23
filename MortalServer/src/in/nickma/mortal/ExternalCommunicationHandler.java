@@ -9,7 +9,7 @@ public class ExternalCommunicationHandler {
     private final String password;
 
     private static final String INITIAL_URL =
-            "http://www.hacker.org/coil/index.php?name=%s&password=%s";
+            "http://www.hacker.org/coil/index.php?name=%s&password=%s&gotolevel=1";
     private static final String SUBMIT_URL =
             "http://www.hacker.org/coil/index.php?name=%s&password=%s&path=%s&x=%d&y=%d";
 
