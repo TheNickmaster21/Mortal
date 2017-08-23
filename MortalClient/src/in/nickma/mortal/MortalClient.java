@@ -1,15 +1,10 @@
 package in.nickma.mortal;
 
-import in.nickma.mortal.dtos.ResultDTO;
 import in.nickma.mortal.dtos.WorkDTO;
-import in.nickma.mortal.solving.SimpleSolver;
 import in.nickma.mortal.solving.SmartSolver;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class MortalClient {
 
@@ -26,35 +21,11 @@ public class MortalClient {
         ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
         ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
 
-        List<Long> timeHistory = new LinkedList<>();
-        List<Long> timeHistory2 = new LinkedList<>();
-
         while (!socket.isClosed()) {
             WorkDTO workDTO = receiveWorkDTO(inputStream);
             if (workDTO != null) {
-                SimpleSolver simpleSolver = new SimpleSolver(workDTO);
-                long start = System.nanoTime();
-                ResultDTO resultDTO = simpleSolver.solve();
-                timeHistory.add(System.nanoTime() - start);
-                if (timeHistory.size() % 10 == 0) {
-                    System.out.println("Simple solving took "
-                            + String.valueOf(timeHistory.stream().collect(Collectors.averagingLong(l -> l)) / 1000000000)
-                            + " seconds on average.");
-                    timeHistory = new LinkedList<>();
-                }
-
                 SmartSolver smartSolver = new SmartSolver(workDTO);
-                long start2 = System.nanoTime();
-                smartSolver.solve();
-                timeHistory2.add(System.nanoTime() - start2);
-                if (timeHistory2.size() % 10 == 0) {
-                    System.out.println("Smart solving took "
-                            + String.valueOf(timeHistory2.stream().collect(Collectors.averagingLong(l -> l)) / 1000000000)
-                            + " seconds on average.");
-                    timeHistory2 = new LinkedList<>();
-                }
-
-                outputStream.writeObject(resultDTO);
+                outputStream.writeObject(smartSolver.solve());
             } else {
                 try {
                     Thread.sleep(100);
@@ -72,7 +43,6 @@ public class MortalClient {
             try {
                 socket = new Socket("localhost", 8081);
             } catch (Exception e) {
-
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException ie) {

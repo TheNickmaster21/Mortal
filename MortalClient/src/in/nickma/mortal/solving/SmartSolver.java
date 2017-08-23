@@ -4,16 +4,13 @@ import in.nickma.mortal.dtos.ResultDTO;
 import in.nickma.mortal.dtos.WorkDTO;
 import in.nickma.mortal.enums.Direction;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collector;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SmartSolver implements Solver {
 
     private ResultDTO result = null;
-    private List<int[]> endSpaces = new ArrayList<>();
+    private Set<Point> endPoints = new HashSet<>();
     private WorkDTO workDTO;
 
     public SmartSolver(final WorkDTO workDTO) {
@@ -72,6 +69,7 @@ public class SmartSolver implements Solver {
             }
             System.out.println();
         }
+        System.out.println();
     }
 
 
@@ -87,7 +85,7 @@ public class SmartSolver implements Solver {
                     newGrid[nextX][nextY] = false;
                     for (Direction innerDirection : direction.getSides()) {
                         if (isSpaceEnd(nextX + innerDirection.getX(), nextY + innerDirection.getY(), newGrid)) {
-                            endSpaces.add(new int[]{nextX + innerDirection.getX(), nextY + innerDirection.getY()});
+                            endPoints.add(new Point(nextX + innerDirection.getX(), nextY + innerDirection.getY()));
                         }
                     }
 
@@ -108,15 +106,20 @@ public class SmartSolver implements Solver {
                             workDTO.getStartY(),
                             workDTO.getLevel());
                     return;
-                } else if (endSpaces.size() > 2) {
-                    endSpaces = endSpaces
+                } else if (endPoints.size() > 2) {
+                    endPoints = endPoints
                             .stream()
-                            .filter(points -> isSpaceEnd(points[0], points[1], newGrid))
-                            .collect(Collectors.toList());
-                    if (endSpaces.size() > 2) {
+                            .filter(point -> isSpaceEnd(point.getX(), point.getY(), newGrid))
+                            .collect(Collectors.toSet());
+                    if (endPoints.size() > 2) {
+                        endPoints.forEach(p -> {
+                            System.out.print(p.getX());
+                            System.out.print(",");
+                            System.out.println(p.getY());
+                        });
+                        printGrid(newGrid, nextX - direction.getX(), nextY - direction.getY());
                         return;
                     }
-
                 }
 
                 buildNextSteps(new Step(
