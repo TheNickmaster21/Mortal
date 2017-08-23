@@ -1,6 +1,8 @@
 package in.nickma.mortal;
 
+import in.nickma.mortal.dtos.ResultDTO;
 import in.nickma.mortal.dtos.WorkDTO;
+import in.nickma.mortal.solving.SimpleSolver;
 import in.nickma.mortal.solving.SmartSolver;
 
 import java.io.*;
@@ -24,8 +26,14 @@ public class MortalClient {
         while (!socket.isClosed()) {
             WorkDTO workDTO = receiveWorkDTO(inputStream);
             if (workDTO != null) {
-                SmartSolver smartSolver = new SmartSolver(workDTO);
-                outputStream.writeObject(smartSolver.solve());
+                SimpleSolver simpleSolver = new SimpleSolver(workDTO);
+                ResultDTO resultDTO = simpleSolver.solve();
+                if (resultDTO.isSuccessfull()) {
+                    SmartSolver smartSolver = new SmartSolver(workDTO);
+                    outputStream.writeObject(smartSolver.solve());
+                } else {
+                    outputStream.writeObject(resultDTO);
+                }
             } else {
                 try {
                     Thread.sleep(100);
